@@ -37,7 +37,7 @@ def fulcon_softmax_layer(layer_in, channels_in, channels_out, name='fulcon_softm
 
     return fulcon, func
 
-def init_model(x, pkeep=1):
+def init_model(x):
   conv1 = conv_relu_layer(x, 1, 5, 1, 4, 'conv_1')
   conv2 = conv_relu_layer(conv1, 4, 3, 1, 8, 'conv_2')
   maxpool1 = maxpool_layer(conv2, 2, 2, 'maxpool_2')
