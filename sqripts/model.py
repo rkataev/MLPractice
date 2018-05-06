@@ -1,4 +1,4 @@
-# model.py
+# model.py - describe the model
 import tensorflow as tf
 
 def conv_relu_layer(layer_in, channels_in, kernel_size, filter_step, channels_out, name='conv_relu'):
