@@ -33,9 +33,9 @@ def fulcon_softmax_layer(layer_in, channels_in, channels_out, name='fulcon_softm
     b = tf.Variable(tf.truncated_normal([channels_out], stddev=0.1), name='b')
 
     fulcon = tf.matmul(layer_in, w)
-    func = tf.nn.relu(fulcon + b)
+    func = tf.nn.softmax(fulcon + b)
 
-    return func
+    return fulcon, func
 
 def init_model(x):
   conv1 = conv_relu_layer(x, 1, 5, 1, 4, 'conv_1')
@@ -47,6 +47,8 @@ def init_model(x):
   reshape_lastconv_layer = tf.reshape(maxpool2, shape=[-1, 7 * 7 * 16])
   fulcon1 = fulcon_relu_layer(reshape_lastconv_layer, 16, 256, 'fulcon_1')
   
-  y = fulcon_softmax_layer(fulcon1, 256, 10, 'y')
+  fulcon1 = tf.nn.dropout(fulcon1, pkeep)
   
-  return y
+  ylogits, y = fulcon_softmax_layer(fulcon1, 256, 10, 'y')
+  
+  return ylogits, y
