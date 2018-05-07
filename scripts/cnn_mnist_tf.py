@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow.contrib.learn.python.learn.datasets.mnist import read_data_sets
 
 NUM_ITERS = 200
-DISPLAY_STEP = 100
+DISPLAY_STEP = 50
 BATCH_SIZE = 100
 CKPT_PATH = '../tmp/'
 
@@ -38,6 +38,10 @@ with tf.name_scope("train"):
 
 init = tf.global_variables_initializer()
 
+tf.summary.scalar("cross_entropy", cross_entropy)
+tf.summary.scalar("accuracy", accuracy)
+tf.summary.image("input", X, 3)
+
 saver = tf.train.Saver()
 
 with tf.Session() as sess:
@@ -53,12 +57,15 @@ with tf.Session() as sess:
         print("Tensorflow initialization...")
         sess.run(init)
 
+    merged_summary = tf.summary.merge_all()
     writer = tf.summary.FileWriter('../visualisations/')
     writer.add_graph(sess.graph)
-    
+
     for i in range(NUM_ITERS + 1):
         batch_X, batch_Y = mnist.train.next_batch(BATCH_SIZE)
-        
+        if i % 5 == 0:
+            ms = sess.run(merged_summary, feed_dict={X: batch_X, Y_: batch_Y, pkeep: 1.0})
+            writer.add_summary(ms, i)
         if i % DISPLAY_STEP == 0:
             acc_trn, loss_trn = sess.run([accuracy, cross_entropy], feed_dict={X: batch_X, Y_: batch_Y, pkeep: 1.0})
             acc_tst, loss_tst = sess.run([accuracy, cross_entropy], feed_dict={X: mnist.test.images, Y_: mnist.test.labels, pkeep: 1.0})

@@ -9,6 +9,10 @@ def conv_relu_layer(layer_in, channels_in, kernel_size, filter_step, channels_ou
     conv = tf.nn.conv2d(layer_in, w, strides=[1, filter_step, filter_step, 1], padding='SAME')
     func = tf.nn.relu(conv + b)
 
+    tf.summary.histogram("weights", w)
+    tf.summary.histogram("biases", b)
+    tf.summary.histogram("activations", func)
+
     return func
 
 def maxpool_layer(layer_in, kernel_size, filter_step, name='maxpool'):
