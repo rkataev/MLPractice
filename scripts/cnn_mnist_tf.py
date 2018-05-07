@@ -3,7 +3,7 @@ import os.path
 import tensorflow as tf
 from tensorflow.contrib.learn.python.learn.datasets.mnist import read_data_sets
 
-NUM_ITERS = 200
+NUM_ITERS = 5000
 DISPLAY_STEP = 50
 BATCH_SIZE = 100
 CKPT_PATH = '../tmp/'
@@ -79,3 +79,8 @@ with tf.Session() as sess:
                 num_used_data_path.write(str(num_used_data + (i) * BATCH_SIZE) + '\n')
 
         sess.run(train_step, feed_dict={X: batch_X, Y_: batch_Y, pkeep: 0.75})
+
+    export_dir = "../saved_model/"
+    inputs = {"x": X}
+    outputs = {"y": Y}
+    tf.saved_model.simple_save(sess, export_dir, inputs, outputs)
