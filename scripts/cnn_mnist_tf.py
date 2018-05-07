@@ -16,21 +16,25 @@ print("Reading dataset...")
 mnist = read_data_sets("../data/", one_hot=True, reshape=False, validation_size=0)
 
 print("python initialization...")
-X = tf.placeholder(tf.float32, [None, 28, 28, 1])
-Y_ = tf.placeholder(tf.float32, [None, 10])
+X = tf.placeholder(tf.float32, [None, 28, 28, 1], name='x')
+Y_ = tf.placeholder(tf.float32, [None, 10], name='labels')
 
 pkeep = tf.placeholder(tf.float32)
 
 Ylogits, Y = model.init_model(X, pkeep)
 
-cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=Ylogits, labels=Y_)
-cross_entropy = tf.reduce_mean(cross_entropy)*100
+with tf.name_scope("cross_entropy"):
+    cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=Ylogits, labels=Y_)
+    cross_entropy = tf.reduce_mean(cross_entropy)*100
 
-correct_prediction = tf.equal(tf.argmax(Y, 1), tf.argmax(Y_, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+with tf.name_scope("accuracy"):
+    correct_prediction = tf.equal(tf.argmax(Y, 1), tf.argmax(Y_, 1))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 learning_rate = 0.003
-train_step = tf.train.AdamOptimizer(learning_rate).minimize(cross_entropy)
+
+with tf.name_scope("train"):
+    train_step = tf.train.AdamOptimizer(learning_rate).minimize(cross_entropy)
 
 init = tf.global_variables_initializer()
 
@@ -51,9 +55,8 @@ with tf.Session() as sess:
 
     writer = tf.summary.FileWriter('../visualisations/')
     writer.add_graph(sess.graph)
-
+    
     for i in range(NUM_ITERS + 1):
-        
         batch_X, batch_Y = mnist.train.next_batch(BATCH_SIZE)
         
         if i % DISPLAY_STEP == 0:
