@@ -4,3 +4,4 @@ MNISTdata/**
 tmp/**
 events.*
 *.pyc
+*.png
